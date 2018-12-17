@@ -1,23 +1,17 @@
-const fetch = require('isomorphic-fetch');
+const axios = require('axios');
 
-function callApi(endpoint) {
+async function getTransactions(endpoint) {
     const requestUrl = `http://localhost:5000/${endpoint}`;
 
-    return (requestUrl, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => response.json())
-        .then(json => {
-            if (json) return json;
-        })
-        .catch(reason => {
-            throw new Error(reason)
-        })
+    try {
+        const response = await axios.get(requestUrl)
+        return response.json()
+    }
+    catch (e) {
+        console.error(e)
+    }
+
 };
 
 
-module.exports = callApi();
+module.exports = getTransactions();

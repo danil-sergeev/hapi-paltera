@@ -4,7 +4,7 @@ const {ApolloServer, gql} = require('apollo-server-hapi');
 const cron = require('node-cron');
 
 const schema = require('./graphql/schema');
-const callApi = require('./utils/requests');
+const getTransactions = require('./utils/requests');
 const DuoTransaction = require('./models/DuoTransaction');
 
 
@@ -66,7 +66,7 @@ const init = async () => {
 };
 
 cron.schedule('* * * * *', () => {
-    callApi('duo/')
+    getTransactions('duo/')
         .then(response => {
             response.map(transaction => {
                 DuoTransaction.findOneAndUpdate(...transaction, ...transaction, {upsert: true}, (err, doc) => {
