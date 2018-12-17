@@ -1,8 +1,10 @@
 const Hapi = require('hapi');
 const mongoose = require('mongoose');
 const {ApolloServer, gql} = require('apollo-server-hapi');
+const cron = require('node-cron');
 
 const schema = require('./graphql/schema');
+const callApi = require('./utils/requests');
 const DuoTransaction = require('./models/DuoTransaction');
 
 
@@ -17,9 +19,6 @@ const mongoDbOptions = {
 };
 
 mongoose.connect(mongoDbUrl, mongoDbOptions)
-    .then(() => {
-        console.log('Connected to database')
-    })
     .catch(reason => {
         console.log('Reason: ', reason)
     });
@@ -60,11 +59,23 @@ const init = async () => {
         }
     ])
 
-    await graphqlServer.applyMiddleware({ app, });
+    await graphqlServer.applyMiddleware({app,});
     await graphqlServer.installSubscriptionHandlers(app.listener);
     await app.start();
     console.log(`Server running at : ${app.info.uri}`)
 };
+
+cron.schedule('* * * * *', () => {
+    callApi('duo/')
+        .then(response => {
+            response.map(transaction => {
+                DuoTransaction.findOneAndUpdate(...transaction, ...transaction, {upsert: true}, (err, doc) => {
+                    if (err) return err;
+                    doc.save()
+                })
+            })
+        })
+});
 
 
 init();

@@ -3,12 +3,13 @@ const graphql = require('graphql');
 const DuoTransaction = require('../models/DuoTransaction')
 const DuoTransactionType = require('./DuoTransactionType');
 
-const {GraphQLObjectType, GraphQLString, GraphQLSchema} = graphql;
+const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList} = graphql;
 
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
+
         DuoTransaction: {
             type: DuoTransactionType,
             args: {id: {type: GraphQLString}},
@@ -17,11 +18,10 @@ const RootQuery = new GraphQLObjectType({
             }
         },
 
-        allDuoTransactions: {
-            type: DuoTransactionType,
-            args: {},
-            resolve(parents, args) {
-                return DuoTransaction.find(args);
+        duoTransactions: {
+            type: new GraphQLList(DuoTransactionType),
+            resolve() {
+                return DuoTransaction.find();
             }
         }
     }
