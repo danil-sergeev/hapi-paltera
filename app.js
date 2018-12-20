@@ -2,6 +2,7 @@ const Hapi = require('hapi');
 const mongoose = require('mongoose');
 const {ApolloServer, gql} = require('apollo-server-hapi');
 const cron = require('node-cron');
+const axios = require('axios');
 
 const schema = require('./graphql/schema');
 const getTransactions = require('./utils/requests');
@@ -29,7 +30,7 @@ mongoose.connection.once('open', () => {
 
 
 const app = new Hapi.server({
-    port: 4000,
+    port: 1488,
     host: 'localhost'
 });
 
@@ -66,15 +67,20 @@ const init = async () => {
 };
 
 cron.schedule('* * * * *', () => {
-    getTransactions('duo/')
+    console.log('Started task!')
+    axios.get('http://localhost:5000/duo')
         .then(response => {
-            response.map(transaction => {
-                DuoTransaction.findOneAndUpdate(...transaction, ...transaction, {upsert: true}, (err, doc) => {
-                    if (err) return err;
-                    doc.save()
-                })
+            const {data} = response;
+
+            data.map((transaction, index) => {
+                console.log(transaction)
+                console.log(index)
             })
         })
+        .catch(reason => {
+            console.log(reason)
+        });
+
 });
 
 
