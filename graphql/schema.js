@@ -1,7 +1,7 @@
 const graphql = require('graphql');
 
-const DuoTransaction = require('../models/DuoTransaction')
-const DuoTransactionType = require('./DuoTransactionType');
+const DuoTransaction = require('../models/transactions/DuoTransaction')
+const DuoTransactionType = require('./transactions/DuoTransactionType');
 
 const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList} = graphql;
 

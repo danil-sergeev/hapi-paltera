@@ -5,8 +5,7 @@ const cron = require('node-cron');
 const axios = require('axios');
 
 const schema = require('./graphql/schema');
-const getTransactions = require('./utils/requests');
-const DuoTransaction = require('./models/DuoTransaction');
+const DuoTransaction = require('./models/transactions/DuoTransaction');
 
 
 const mongoDbUrl = 'mongodb://user:qazwsx11@ds024748.mlab.com:24748/paltera';
@@ -73,8 +72,13 @@ cron.schedule('* * * * *', () => {
             const {data} = response;
 
             data.map((transaction, index) => {
-                console.log(transaction)
-                console.log(index)
+                const newTransaction = new DuoTransaction({
+                    ...transaciton
+                });
+
+                newTransaction.save();
+                console.log(`New transaction created: ${newTransaction}`)
+
             })
         })
         .catch(reason => {
