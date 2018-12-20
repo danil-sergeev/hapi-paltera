@@ -1,7 +1,11 @@
+'use strict';
 const graphql = require('graphql');
-
-const DuoTransaction = require('../models/transactions/DuoTransaction')
-const DuoTransactionType = require('./transactions/DuoTransactionType');
+// transactions
+const {DuoTransaction} = require('../models/transactions');
+const {DuoTransactionType} = require('./transactions');
+// configs
+const {ExchangeConfig, Method, Param} = require('../models/configs');
+const {ExchangeConfigType, MethodType, ParamType} = require('./configs');
 
 const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList} = graphql;
 
