@@ -9,6 +9,13 @@ const {ExchangeConfigType, MethodType, ParamType} = require('./configs');
 
 const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList} = graphql;
 
+const RootMutation = new GraphQLObjectType({
+    name: 'RootMutationType',
+    fields : {
+        //
+    }
+})
+
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -27,11 +34,52 @@ const RootQuery = new GraphQLObjectType({
             resolve() {
                 return DuoTransaction.find();
             }
+        },
+
+        exchangeConfig: {
+            type: ExchangeConfigType,
+            args: {title: {type: GraphQLString}},
+            resolve(parents, args) {
+                return ExchangeConfig.find({title: args.title})
+            }
+        },
+        configs: {
+            type: new GraphQLList(ExchangeConfigType),
+            resolve() {
+                return ExchangeConfig.find().populate([Method, Param]);
+            }
+        },
+        param: {
+            type: ParamType,
+            args: {id: {type: GraphQLString}, title: {type: GraphQLString}},
+            resolve(parents, args) {
+                return Param.find(...args).populate(ExchangeConfig)
+            }
+        },
+        allParams: {
+            type: new GraphQLList(ParamType),
+            resolve() {
+                return Param.find()
+            }
+        },
+        method: {
+            type: MethodType,
+            args: {id: {type: GraphQLString}, title: {type: GraphQLString}},
+            resolve(parents, args) {
+                return Method.find(...args).populate(ExchangeConfig)
+            }
+        },
+        allMethods: {
+            type: new GraphQLList(MethodType),
+            resolve() {
+                return Method.find().populate(ExchangeConfig)
+            }
         }
     }
 });
 
 
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: RootMutation
 });
