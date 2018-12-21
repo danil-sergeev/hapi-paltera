@@ -4,17 +4,36 @@ const graphql = require('graphql');
 const {DuoTransaction} = require('../models/transactions');
 const {DuoTransactionType} = require('./transactions');
 // configs
-const {ExchangeConfig, Method, Param} = require('../models/configs');
-const {ExchangeConfigType, MethodType, ParamType} = require('./configs');
+const {ExchangeConfig, Method, Param, ExchangeSecret} = require('../models/configs');
+const {ExchangeConfigType, MethodType, ParamType, ExchangeSecretType} = require('./configs');
 
-const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList} = graphql;
 
-const RootMutation = new GraphQLObjectType({
+
+const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLInputObjectType} = graphql;
+
+
+const RootMutation = new GraphQLInputObjectType({
     name: 'RootMutationType',
     fields : {
-        //
+        ExchangeSecret: {
+            type: ExchangeSecretType,
+            args: {
+                exchangeTitle: {type: GraphQLString},
+                secret: {type: GraphQLString},
+                apiKey: {type: GraphQLString}
+            },
+            resolve(parents, args) {
+                if (!args) {
+                    throw Error("Please provide initials to create exchange secret object.")
+                }
+                const exchangeSecret = new ExchangeSecret({
+                    ...args
+                });
+                return exchangeSecret.save();
+            }
+        }
     }
-})
+});
 
 
 const RootQuery = new GraphQLObjectType({

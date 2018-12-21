@@ -5,8 +5,9 @@ const cron = require('node-cron');
 const axios = require('axios');
 
 const schema = require('./graphql/schema');
-const DuoTransaction = require('./models/transactions/DuoTransaction');
 
+const DuoTransaction = require('./models/transactions/DuoTransaction');
+const {ExchangeConfig} = require('./models/configs');
 
 const mongoDbUrl = 'mongodb://user:qazwsx11@ds024748.mlab.com:24748/paltera';
 const mongoDbOptions = {
@@ -55,6 +56,13 @@ const init = async () => {
                 });
 
                 return transaction.save();
+            }
+        },
+        {
+            method: 'GET',
+            path: '/api/v1/configs',
+            handler: (request, reply) => {
+                ExchangeConfig.find();
             }
         }
     ])
